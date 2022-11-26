@@ -8,13 +8,11 @@ public class Main {
         // create file
         File file1 = new File("pokedex.txt");
         //file writer
-        FileWriter fw = new FileWriter(file1);
         //print writer
-        PrintWriter pw = new PrintWriter(fw);
 
         Scanner sc = new Scanner(System.in);
 
-        dexEntry[] myEntries = new dexEntry[9];
+        dexEntry[] myEntries = new dexEntry[57];
 
         int input = JOptionPane.showConfirmDialog(null,"Create new poxedex?\n" +
                 "This will overwrite existing data!");
@@ -22,16 +20,20 @@ public class Main {
             for(int i = 0; i < myEntries.length; i++){
                 myEntries[i] = new dexEntry();
             }
-            updateDex(pw, myEntries, sc);
+            updateDex(myEntries, sc, file1);
         }
+        input = JOptionPane.showConfirmDialog(null, "Read latest pokedex?");
+        if(input == 0){
+            readDex(file1);
+        }
+    }
         //read dex
         //read csv file
-        readDex(pw,file1,fw);
-//        updateDex(pw, myEntries, sc);
-//        readDex(pw,file1,fw);
-    }
+        //updateDex(myEntries, sc, file1);
+        //readDex(file1);
 
-    private static void readDex(PrintWriter pw, File file1, FileWriter fw) throws IOException {
+
+    private static void readDex(File file1) throws IOException {
         String file = "pokedex.txt";
         BufferedReader reader = null;
         String line = "";
@@ -53,19 +55,38 @@ public class Main {
         }
     }
 
-    private static void updateDex(PrintWriter pw, dexEntry myEntries[], Scanner sc) {
-        System.out.println("Choose a pokemon you caught");
-        String starter = sc.next();
-        for(int i = 0; i < myEntries.length; i++){
-            if(starter.equalsIgnoreCase(myEntries[i].getName(starter))){
-                myEntries[i].updateDex(starter);
+    private static void updateDex(dexEntry myEntries[], Scanner sc, File file1) throws IOException {
+        //Make new instances each time
+        FileWriter fw = new FileWriter(file1);
+        PrintWriter pw = new PrintWriter(fw);
+        String newPokemon;
+        do{
+            System.out.println("Choose a pokemon you caught.\nType 'Stop' once you're finished.");
+            newPokemon = sc.next();
+            if(newPokemon.equalsIgnoreCase("Nidoran")){
+                String tmp = "";
+                do{
+                    System.out.println("Enter your Nidoran's gender (M/F)");
+                    tmp = sc.next();
+                }while(!tmp.equalsIgnoreCase("m") && !tmp.equalsIgnoreCase("f"));
+                if(tmp.equalsIgnoreCase("m")){
+                    newPokemon = "Nidoran(M)";
+                }
+                else{
+                    newPokemon = "Nidoran(F)";
+                }
             }
-        }
+            for(int i = 0; i < myEntries.length; i++){
+                if(newPokemon.equalsIgnoreCase(myEntries[i].getName(newPokemon))){
+                    myEntries[i].updateDex(newPokemon);
+                }
+            }
+        }while (!newPokemon.equalsIgnoreCase("Stop"));
         System.out.println("Overwriting. . .");
         pw.printf("%20s","Pokemon Name");
         pw.printf("%20s","Caught");
         pw.printf("%20s","Encountered\n");
-        for(int i = 0; i < 9; i++) {
+        for(int i = 0; i < myEntries.length; i++) {
             myEntries[i].getInfo(pw);
         }
         pw.close();
